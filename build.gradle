@@ -47,3 +47,8 @@ tasks.withType(Test) {
         }
     }
 }
+tasks.register('mobile_tests', Test) {
+    useJUnitPlatform {
+        includeTags("mobile_tests")
+    }
+}
