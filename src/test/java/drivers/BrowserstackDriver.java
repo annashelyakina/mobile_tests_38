@@ -1,7 +1,9 @@
 package drivers;
 
 import com.codeborne.selenide.WebDriverProvider;
+import config.WebDriverConfig;
 import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -12,6 +14,11 @@ import java.net.URL;
 
 public class BrowserstackDriver implements WebDriverProvider {
 
+    private final WebDriverConfig config;
+    public BrowserstackDriver() {
+        this.config = ConfigFactory.create(WebDriverConfig.class, System.getProperties());
+    }
+
     @NotNull
     @Override
     public WebDriver createDriver(@NotNull Capabilities capabilities) {
@@ -19,15 +26,15 @@ public class BrowserstackDriver implements WebDriverProvider {
         MutableCapabilities caps = new MutableCapabilities();
 
         // Set your access credentials
-        caps.setCapability("browserstack.user", "anna_ds6Jvj");
-        caps.setCapability("browserstack.key", "BvFsNCs2kcYFxy1fkBb3");
+        caps.setCapability("browserstack.user", config.getUser());
+        caps.setCapability("browserstack.key", config.getKey());
 
         // Set URL of the application under test
         caps.setCapability("app", "bs://sample.app");
 
         // Specify device and os_version for testing
-        caps.setCapability("device", "Samsung Galaxy S23");
-        caps.setCapability("os_version", "13.0");
+        caps.setCapability("device", config.getDevice());
+        caps.setCapability("os_version", config.getOsVersion());
 
         // Set other BrowserStack capabilities
         caps.setCapability("project", "First Java Project");
@@ -39,7 +46,7 @@ public class BrowserstackDriver implements WebDriverProvider {
         // and desired capabilities defined above
         try {
             return new RemoteWebDriver(
-                    new URL("https://hub.browserstack.com/wd/hub"), caps);
+                    new URL(config.getRemoteURL()), caps);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
